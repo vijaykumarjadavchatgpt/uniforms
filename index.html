@@ -1,325 +1,74 @@
+<html>
+<boy>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VrajArts Photography</title>
+  <meta charset="UTF-8">
+  <title>Live Barcode Stock Form</title>
   <style>
-    * { box-sizing: border-box; }
-
     body {
-      background: #111;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      padding: 30px;
     }
-
-    .cover {
-      position: relative;
-      width: 100vw;
-      height: 60vh;
-      overflow: hidden;
+    .form-box {
+      max-width: 400px;
+      background: #f0f0f0;
+      padding: 20px;
+      border-radius: 10px;
     }
-
-    .cover-image {
-      width: 100vw;
-      height: 60vh;
-      object-fit: cover;
-      display: block;
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
     }
-
-    .cover-title {
-      position: absolute;
-      top: 40vh;
-      left: 3vw;
-      font-size: 3rem;
+    .stock-info {
+      margin-top: 15px;
       font-weight: bold;
-      color: #fff;
-      text-shadow: 0 0 20px #000;
-      user-select: none;
-    }
-
-    .portfolio {
-      padding: 2em 1em 3em;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .portfolio h2 {
-      text-align: center;
-      margin-bottom: 1em;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-    }
-
-    .masonry {
-      column-count: 4;
-      column-gap: 1.2em;
-      padding: 1.2em 0;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .masonry img {
-      width: 100%;
-      height: auto;
-      margin-bottom: 1.2em;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-      break-inside: avoid;
-      cursor: pointer;
-      transition: box-shadow 0.3s, transform 0.2s;
-      background: #222;
-    }
-    .masonry img:hover, .masonry img:focus {
-      outline: none;
-      box-shadow: 0 8px 32px rgba(60,180,255,0.7);
-      transform: scale(1.04);
-    }
-
-    /* Responsive Masonry columns */
-    @media (max-width: 900px) {
-      .masonry { column-count: 2; }
-    }
-    @media (max-width: 600px) {
-      .masonry { column-count: 1; }
-      .cover-title { font-size: 2rem; top: 35vh; }
-    }
-
-    .floating-sidebar {
-      position: fixed;
-      left: 2vw;
-      top: 35%;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      z-index: 1000;
-    }
-    .floating-sidebar a {
-      display: inline-block;
-      width: 47px;
-      height: 47px;
-      border-radius: 50%;
-      background: #222;
-      padding: 6px;
-      box-shadow: 0 0 10px #000;
-      transition: transform 0.3s, background 0.3s;
-    }
-    .floating-sidebar a img {
-      width: 35px;
-      height: 35px;
-      display: block;
-      margin: 0 auto;
-      user-select: none;
-      pointer-events: none;
-    }
-    .floating-sidebar a:hover {
-      background: #000;
-      transform: scale(1.15);
-      box-shadow: 0 0 12px #0f9d58;
-    }
-    @media (max-width: 768px) {
-      .floating-sidebar { left: 1vw; gap: 12px; }
-      .floating-sidebar a { width: 40px; height: 40px; padding: 5px; }
-      .floating-sidebar a img { width: 26px; height: 26px; }
-    }
-
-    /* Zoom Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background-color: rgba(0,0,0,0.9);
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      max-width: 90vw;
-      max-height: 90vh;
-      cursor: grab;
-      position: relative;
-      transition: transform 0.3s ease;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(60,180,255,0.8);
-      background: #222;
-    }
-    .modal-content:active { cursor: grabbing; }
-    .toolbar {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      gap: 10px;
-      z-index: 2100;
-    }
-    .toolbar button {
-      background-color: #222;
-      border: none;
-      color: white;
-      font-size: 18px;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #000;
-      transition: background-color 0.3s;
-    }
-    .toolbar button:hover {
-      background-color: #555;
     }
   </style>
 </head>
 <body>
 
-  <!-- Cover Section -->
-  <section class="cover">
-    <img src="https://vrajarts.in/VrajArts_coverpage.png" alt="VrajArts Cover" class="cover-image" />
-    <div class="cover-title" aria-label="VrajArts Photography">VrajArts Photography</div>
-  </section>
+<div class="form-box">
+  <h3>Select Barcode</h3>
+  <select id="barcodeSelect" onchange="showStock()">
+    <option value="">-- Select Barcode --</option>
+    <!-- Options will be filled by JS -->
+  </select>
+  <div class="stock-info" id="stockDisplay">Stock: --</div>
+</div>
 
-  <!-- Portfolio Section: Masonry Grid -->
-  <section class="portfolio" aria-label="Photography Portfolio">
-    <h2>Portfolio</h2>
-    <div class="masonry">
-      <img src="https://vrajarts.in/img/1t.jpg" alt="Portfolio photo 1 by VrajArts" tabindex="0" />
-      <img src="https://vrajarts.in/img/2t.jpg" alt="Portfolio photo 2 by VrajArts" tabindex="0" />
-      <img src="https://vrajarts.in/img/3t.jpg" alt="Portfolio photo 3 by VrajArts" tabindex="0" />
-      <!-- Add more images for richer Google Photos look -->
-    </div>
-  </section>
+<script>
+  let stockData = {};
 
-  <!-- Floating Social Sidebar (with fixed PNG icons for Call and Customer Corner) -->
-  <nav class="floating-sidebar" aria-label="Social and Contact Links">
-    <a href="https://wa.me/919662294080" target="_blank" rel="noopener" title="WhatsApp Chat">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp icon" />
-    </a>
-    <a href="https://www.instagram.com/vrajarts.in/" target="_blank" rel="noopener" title="Instagram Profile">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram icon" />
-    </a>
-    <a href="https://www.facebook.com/vrajarts.in" target="_blank" rel="noopener" title="Facebook Page">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" alt="Facebook icon" />
-    </a>
-    <a href="tel:9662294080" title="Call Phone Number">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Call icon" />
-    </a>
-    <a href="https://customercorner.vrajarts.in/" target="_blank" rel="noopener" title="Customer Corner">
-      <img src="https://img.icons8.com/ios-filled/50/ffffff/gender-neutral-user.png" alt="Customer Corner icon"/>
-    </a>
-  </nav>
+  // Fetch stock.csv and parse
+  fetch('stock.csv')
+    .then(response => response.text())
+    .then(data => {
+      const lines = data.trim().split('\n').slice(1); // skip header
+      const select = document.getElementById("barcodeSelect");
 
-  <!-- Zoom Modal and Toolbar -->
-  <div class="modal" id="zoomModal">
-    <img src="" alt="Zoomed Image" class="modal-content" id="modalImage" />
-    <div class="toolbar" id="zoomToolbar">
-      <button id="zoomInBtn" title="Zoom In (Ctrl +)">+</button>
-      <button id="zoomOutBtn" title="Zoom Out (Ctrl -)">-</button>
-      <button id="closeBtn" title="Close">&times;</button>
-    </div>
-  </div>
+      lines.forEach(line => {
+        const [barcode, stock] = line.split(',');
+        stockData[barcode] = stock;
 
-  <script>
-  (function() {
-    const modal = document.getElementById('zoomModal');
-    const modalImg = document.getElementById('modalImage');
-    const zoomInBtn = document.getElementById('zoomInBtn');
-    const zoomOutBtn = document.getElementById('zoomOutBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    let scale = 1;
-    let originX = 0;
-    let originY = 0;
-    let startX, startY;
-    let isDragging = false;
-
-    // Bind click/keypress for all images (masonry).
-    document.querySelectorAll('.masonry img').forEach(img => {
-      img.addEventListener('click', () => {
-        modal.style.display = 'flex';
-        modalImg.src = img.src;
-        scale = 1;
-        resetTransform();
-      });
-      img.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          modal.style.display = 'flex';
-          modalImg.src = img.src;
-          scale = 1;
-          resetTransform();
-        }
+        const option = document.createElement("option");
+        option.value = barcode;
+        option.textContent = `${barcode}`;
+        select.appendChild(option);
       });
     });
 
-    function zoomIn() {
-      scale += 0.2;
-      if(scale > 5) scale = 5;
-      updateTransform();
-    }
-    function zoomOut() {
-      scale -= 0.2;
-      if(scale < 1) scale = 1;
-      updateTransform();
-    }
-    function updateTransform() {
-      modalImg.style.transform = `translate(${originX}px, ${originY}px) scale(${scale})`;
-    }
-    function resetTransform() {
-      originX = 0;
-      originY = 0;
-      modalImg.style.transform = `translate(0, 0) scale(1)`;
-    }
+  function showStock() {
+    const barcode = document.getElementById("barcodeSelect").value;
+    const stock = stockData[barcode] ?? "--";
+    document.getElementById("stockDisplay").textContent = `Stock: ${stock}`;
+  }
+</script>
 
-    // Mouse drag support
-    modalImg.addEventListener('mousedown', (e) => {
-      if(scale <= 1) return;
-      isDragging = true;
-      startX = e.clientX - originX;
-      startY = e.clientY - originY;
-      modalImg.style.cursor = 'grabbing';
-    });
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-      modalImg.style.cursor = 'grab';
-    });
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      originX = e.clientX - startX;
-      originY = e.clientY - startY;
-      updateTransform();
-    });
-
-    // Toolbar buttons
-    zoomInBtn.addEventListener('click', zoomIn);
-    zoomOutBtn.addEventListener('click', zoomOut);
-    closeBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-
-    // Keyboard shortcuts
-    window.addEventListener('keydown', (e) => {
-      if (modal.style.display !== 'flex') return;
-      if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
-        e.preventDefault();
-        zoomIn();
-      } else if (e.ctrlKey && e.key === '-') {
-        e.preventDefault();
-        zoomOut();
-      } else if (e.key === 'Escape') {
-        modal.style.display = 'none';
-      }
-    });
-
-    // Click outside image to close
-    modal.addEventListener('click', (e) => {
-      if(e.target === modal) {
-        modal.style.display = 'none';
-      }
-    });
-  })();
-  </script>
 </body>
 </html>
+
+<body/>
+<html/>
