@@ -2,19 +2,52 @@
 <html>
 <head>
   <title>Uniform Form</title>
+  <style>
+    #stockQty {
+      font-weight: bold;
+      padding-left: 10px;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
+  </style>
   <script>
+    let stockData = {}; // Barcode → stock
+
     async function loadData() {
+      // Load stock.csv
       const stock = await fetch("stock.csv").then(res => res.text());
       const stockLines = stock.trim().split("\n").slice(1);
       const stockList = document.getElementById("uniform");
+
       stockLines.forEach(line => {
         const [code, qty] = line.split(",");
+        stockData[code] = parseInt(qty.trim());
+
         const option = document.createElement("option");
         option.value = code;
-        option.text = `${code} (Stock: ${qty})`;
+        option.text = code; // Only barcode shown
         stockList.appendChild(option);
       });
 
+      stockList.addEventListener("change", function () {
+        const selected = this.value;
+        const qty = stockData[selected];
+        const stockQtyEl = document.getElementById("stockQty");
+
+        if (qty !== undefined) {
+          stockQtyEl.textContent = qty;
+          stockQtyEl.className = qty > 10 ? "green" : "red";
+        } else {
+          stockQtyEl.textContent = "-";
+          stockQtyEl.className = "";
+        }
+      });
+
+      // Load store.csv
       const store = await fetch("store.csv").then(res => res.text());
       const storeLines = store.trim().split("\n").slice(1);
       const regionStoreMap = {};
@@ -57,7 +90,8 @@
 
     <label>Uniform (Barcode): 
       <select name="uniform" id="uniform" required></select>
-    </label><br><br>
+    </label>
+    <span>Stock: <span id="stockQty">-</span></span><br><br>
 
     <label>Region:
       <select name="region" id="region" required></select>
@@ -80,8 +114,6 @@
     <button type="submit">Submit</button>
   </form>
 
-  <p id="responseMsg" style="color: green;"></p>
-
   <script>
     document.getElementById("dataForm").addEventListener("submit", function (e) {
       e.preventDefault();
@@ -90,17 +122,17 @@
       const obj = {};
       formData.forEach((value, key) => obj[key] = value);
 
-      fetch("https://script.google.com/macros/s/AKfycbwAYIE41b9px8dFjl-YtTeahtyRrrmlGP8TwxGguTidfsHvip0YUwd6Tzl2xgK96ri4/exec", {
+      fetch("https://script.google.com/macros/s/YOUR_GOOGLE_APPS_SCRIPT_URL/exec", {
         method: "POST",
         body: JSON.stringify(obj)
       })
       .then(res => res.text())
       .then(response => {
-        document.getElementById("responseMsg").innerText = "✅ Data submitted successfully.";
-        this.reset();
+        alert("✅ Your Data Submitted Successfully.");
+        location.reload(); // reset form
       })
       .catch(error => {
-        document.getElementById("responseMsg").innerText = "❌ Error: " + error;
+        alert("❌ Error submitting data: " + error);
       });
     });
   </script>
