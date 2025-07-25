@@ -2,140 +2,131 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Uniform Distribution Form</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uniform Distribution Form</title>
   <style>
     body {
-      background: linear-gradient(to right, #00b4db, #0083b0);
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       margin: 0;
-      padding: 0;
     }
-
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      background: #fff;
+    form {
+      background-color: #fff;
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 500px;
     }
-
     h2 {
       text-align: center;
-      color: #0083b0;
+      margin-bottom: 20px;
     }
-
     label {
       display: block;
-      margin: 15px 0 5px;
-      font-size: 1.1em;
-      color: #333;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: 600;
     }
-
-    input, select {
+    input, select, button {
       width: 100%;
       padding: 12px;
+      margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 1em;
+      font-size: 16px;
     }
-
     #stockQty {
-      display: inline-block;
       font-weight: bold;
-      margin-top: 5px;
+      margin-left: 8px;
     }
-
     .green {
       color: green;
     }
-
     .red {
       color: red;
     }
-
     button {
-      background: #00b4db;
-      color: #fff;
+      background-color: #007BFF;
+      color: white;
       border: none;
-      padding: 12px;
-      width: 100%;
-      font-size: 1.1em;
-      border-radius: 8px;
       margin-top: 20px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s;
     }
-
     button:hover {
-      background: #007e9c;
+      background-color: #0056b3;
     }
-
-    @media (max-width: 600px) {
-      .container {
-        margin: 20px;
+    @media(max-width: 600px) {
+      form {
         padding: 20px;
       }
-
       label, input, select, button {
-        font-size: 1em;
+        font-size: 14px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <form id="dataForm">
     <h2>Uniform Distribution Form</h2>
-    <form id="dataForm">
-      <label for="emp_code">Employee Code:</label>
-      <input type="number" name="emp_code" id="emp_code" required>
 
-      <label for="emp_name">Employee Name:</label>
-      <input type="text" name="emp_name" id="emp_name" required>
+    <label>Employee Code:
+      <input type="number" name="emp_code" required>
+    </label>
 
-      <label for="uniform">Uniform (Barcode):</label>
+    <label>Employee Name:
+      <input type="text" name="emp_name" required>
+    </label>
+
+    <label>Uniform (Barcode):
       <select name="uniform" id="uniform" required></select>
-      <div>Stock: <span id="stockQty">-</span></div>
+      <span>Stock: <span id="stockQty">-</span></span>
+    </label>
 
-      <label for="region">Region:</label>
+    <label>Region:
       <select name="region" id="region" required></select>
+    </label>
 
-      <label for="store">Store:</label>
+    <label>Store:
       <select name="store" id="store" required></select>
+    </label>
 
-      <label for="qty">Quantity:</label>
-      <select name="qty" id="qty" required>
+    <label>Qty:
+      <select name="qty" required>
         <script>
-          for (let i = 1; i <= 10; i++) {
+          for(let i=1; i<=10; i++) {
             document.write(`<option value="${i}">${i}</option>`);
           }
         </script>
       </select>
+    </label>
 
-      <button type="submit">Submit</button>
-    </form>
-  </div>
+    <button type="submit">Submit</button>
+  </form>
 
   <script>
     let stockData = {};
 
     async function loadData() {
-      // Load stock.csv
       const stockText = await fetch("stock.csv").then(res => res.text());
       const stockLines = stockText.trim().split("\n").slice(1);
       const uniformSelect = document.getElementById("uniform");
 
       stockLines.forEach(line => {
         const [barcode, qty] = line.split(",");
-        const trimmedBarcode = barcode.trim();
-        const trimmedQty = parseInt(qty.trim());
-        stockData[trimmedBarcode] = trimmedQty;
+        const code = barcode.trim();
+        const quantity = parseInt(qty.trim());
+        stockData[code] = quantity;
 
-        const option = document.createElement("option");
-        option.value = trimmedBarcode;
-        option.text = trimmedBarcode;
-        uniformSelect.appendChild(option);
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.text = code;
+        uniformSelect.appendChild(opt);
       });
 
       uniformSelect.addEventListener("change", function () {
@@ -152,10 +143,10 @@
         }
       });
 
-      // Load store.csv
       const storeText = await fetch("store.csv").then(res => res.text());
       const storeLines = storeText.trim().split("\n").slice(1);
       const regionStoreMap = {};
+
       storeLines.forEach(line => {
         const [region, store] = line.split(",");
         const r = region.trim();
@@ -165,6 +156,15 @@
       });
 
       const regionSelect = document.getElementById("region");
+      const storeSelect = document.getElementById("store");
+
+      const defaultOpt = document.createElement("option");
+      defaultOpt.disabled = true;
+      defaultOpt.selected = true;
+      defaultOpt.hidden = true;
+      defaultOpt.textContent = "-- Select Region --";
+      regionSelect.appendChild(defaultOpt);
+
       Object.keys(regionStoreMap).forEach(region => {
         const opt = document.createElement("option");
         opt.value = region;
@@ -172,53 +172,49 @@
         regionSelect.appendChild(opt);
       });
 
-      regionSelect.addEventListener("change", function () {
-        const selectedRegion = this.value;
-        const storeSelect = document.getElementById("store");
+      function updateStore(region) {
         storeSelect.innerHTML = "";
-        regionStoreMap[selectedRegion]?.forEach(store => {
-          const opt = document.createElement("option");
-          opt.value = store;
-          opt.text = store;
-          storeSelect.appendChild(opt);
-        });
+        if (regionStoreMap[region]) {
+          regionStoreMap[region].forEach(store => {
+            const opt = document.createElement("option");
+            opt.value = store;
+            opt.text = store;
+            storeSelect.appendChild(opt);
+          });
+        }
+      }
+
+      regionSelect.addEventListener("change", function () {
+        updateStore(this.value);
+      });
+
+      regionSelect.addEventListener("click", function () {
+        updateStore(this.value);
       });
     }
 
-    loadData();
+    window.onload = loadData;
 
     document.getElementById("dataForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      const formData = new FormData(this);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
 
-      // Submit to Google Apps Script (replace with your own script URL)
+      const formData = new FormData(this);
+      const obj = {};
+      formData.forEach((value, key) => obj[key] = value);
+
       fetch("https://script.google.com/macros/s/AKfycbwAYIE41b9px8dFjl-YtTeahtyRrrmlGP8TwxGguTidfsHvip0YUwd6Tzl2xgK96ri4/exec", {
         method: "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify(obj)
       })
       .then(res => res.text())
       .then(response => {
         alert("✅ Your Data Submitted Successfully.");
-
-        // Reset form and dropdowns
         this.reset();
         document.getElementById("stockQty").textContent = "-";
         document.getElementById("stockQty").className = "";
-
-        document.getElementById("uniform").selectedIndex = -1;
-        document.getElementById("region").selectedIndex = -1;
-        document.getElementById("store").innerHTML = "";
-
-        // Trigger manual change
-        setTimeout(() => {
-          document.getElementById("uniform").dispatchEvent(new Event('change'));
-          document.getElementById("region").dispatchEvent(new Event('change'));
-        }, 100);
       })
-      .catch(err => {
-        alert("❌ Submission failed: " + err);
+      .catch(error => {
+        alert("❌ Error submitting data: " + error);
       });
     });
   </script>
