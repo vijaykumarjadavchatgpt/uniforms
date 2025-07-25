@@ -1,74 +1,82 @@
-<html>
-<boy>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Live Barcode Stock Form</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
+  <title>Uniform Form</title>
+  <script>
+    async function loadData() {
+      const stock = await fetch("stock.csv").then(res => res.text());
+      const stockLines = stock.trim().split("\n").slice(1);
+      const stockList = document.getElementById("uniform");
+      stockLines.forEach(line => {
+        const [code, qty] = line.split(",");
+        const option = document.createElement("option");
+        option.value = code;
+        option.text = `${code} (Stock: ${qty})`;
+        stockList.appendChild(option);
+      });
+
+      const store = await fetch("store.csv").then(res => res.text());
+      const storeLines = store.trim().split("\n").slice(1);
+      const regionStoreMap = {};
+      storeLines.forEach(line => {
+        const [region, store] = line.split(",");
+        if (!regionStoreMap[region]) regionStoreMap[region] = [];
+        regionStoreMap[region].push(store);
+      });
+
+      const regionSelect = document.getElementById("region");
+      Object.keys(regionStoreMap).forEach(region => {
+        const opt = document.createElement("option");
+        opt.value = region;
+        opt.text = region;
+        regionSelect.appendChild(opt);
+      });
+
+      regionSelect.addEventListener("change", function () {
+        const stores = regionStoreMap[this.value];
+        const storeSelect = document.getElementById("store");
+        storeSelect.innerHTML = "";
+        stores.forEach(store => {
+          const opt = document.createElement("option");
+          opt.value = store;
+          opt.text = store;
+          storeSelect.appendChild(opt);
+        });
+      });
     }
-    .form-box {
-      max-width: 400px;
-      background: #f0f0f0;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    select, input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-    }
-    .stock-info {
-      margin-top: 15px;
-      font-weight: bold;
-    }
-  </style>
+
+    window.onload = loadData;
+  </script>
 </head>
 <body>
+  <h2>Uniform Distribution Form</h2>
+  <form action="save.php" method="post">
+    <label>Employee Code: <input type="number" name="emp_code" required></label><br><br>
+    <label>Employee Name: <input type="text" name="emp_name" required></label><br><br>
 
-<div class="form-box">
-  <h3>Select Barcode</h3>
-  <select id="barcodeSelect" onchange="showStock()">
-    <option value="">-- Select Barcode --</option>
-    <!-- Options will be filled by JS -->
-  </select>
-  <div class="stock-info" id="stockDisplay">Stock: --</div>
-</div>
+    <label>Uniform (Barcode): 
+      <select name="uniform" id="uniform" required></select>
+    </label><br><br>
 
-<script>
-  let stockData = {};
+    <label>Region:
+      <select name="region" id="region" required></select>
+    </label><br><br>
 
-  // Fetch stock.csv and parse
-  fetch('stock.csv')
-    .then(response => response.text())
-    .then(data => {
-      const lines = data.trim().split('\n').slice(1); // skip header
-      const select = document.getElementById("barcodeSelect");
+    <label>Store:
+      <select name="store" id="store" required></select>
+    </label><br><br>
 
-      lines.forEach(line => {
-        const [barcode, stock] = line.split(',');
-        stockData[barcode] = stock;
+    <label>Qty:
+      <select name="qty" required>
+        <script>
+          for(let i=1; i<=10; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select>
+    </label><br><br>
 
-        const option = document.createElement("option");
-        option.value = barcode;
-        option.textContent = `${barcode}`;
-        select.appendChild(option);
-      });
-    });
-
-  function showStock() {
-    const barcode = document.getElementById("barcodeSelect").value;
-    const stock = stockData[barcode] ?? "--";
-    document.getElementById("stockDisplay").textContent = `Stock: ${stock}`;
-  }
-</script>
-
+    <button type="submit">Submit</button>
+  </form>
 </body>
 </html>
-
-<body/>
-<html/>
