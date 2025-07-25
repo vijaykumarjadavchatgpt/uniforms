@@ -1,24 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Uniform Form</title>
+  <title>Uniform Distribution Form</title>
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #dbeafe, #f0f9ff);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    form {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      font-size: 18px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1d4ed8;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
     #stockQty {
       font-weight: bold;
       padding-left: 10px;
     }
+
     .green {
       color: green;
     }
+
     .red {
       color: red;
     }
+
+    button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      padding: 14px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #1e40af;
+    }
+
+    .stock-label {
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
   </style>
+
   <script>
-    let stockData = {}; // Barcode → stock
+    let stockData = {};
 
     async function loadData() {
-      // Load stock.csv
       const stock = await fetch("stock.csv").then(res => res.text());
       const stockLines = stock.trim().split("\n").slice(1);
       const stockList = document.getElementById("uniform");
@@ -29,7 +102,7 @@
 
         const option = document.createElement("option");
         option.value = code;
-        option.text = code; // Only barcode shown
+        option.text = code;
         stockList.appendChild(option);
       });
 
@@ -47,7 +120,6 @@
         }
       });
 
-      // Load store.csv
       const store = await fetch("store.csv").then(res => res.text());
       const storeLines = store.trim().split("\n").slice(1);
       const regionStoreMap = {};
@@ -82,34 +154,40 @@
   </script>
 </head>
 <body>
-  <h2>Uniform Distribution Form</h2>
-
   <form id="dataForm">
-    <label>Employee Code: <input type="number" name="emp_code" required></label><br><br>
-    <label>Employee Name: <input type="text" name="emp_name" required></label><br><br>
+    <h2>Uniform Distribution Form</h2>
 
-    <label>Uniform (Barcode): 
+    <label>Employee Code:
+      <input type="number" name="emp_code" required>
+    </label>
+
+    <label>Employee Name:
+      <input type="text" name="emp_name" required>
+    </label>
+
+    <label>Uniform (Barcode):
       <select name="uniform" id="uniform" required></select>
     </label>
-    <span>Stock: <span id="stockQty">-</span></span><br><br>
+
+    <div class="stock-label">Stock: <span id="stockQty">-</span></div>
 
     <label>Region:
       <select name="region" id="region" required></select>
-    </label><br><br>
+    </label>
 
     <label>Store:
       <select name="store" id="store" required></select>
-    </label><br><br>
+    </label>
 
     <label>Qty:
       <select name="qty" required>
         <script>
-          for(let i=1; i<=10; i++) {
+          for(let i = 1; i <= 10; i++) {
             document.write(`<option value="${i}">${i}</option>`);
           }
         </script>
       </select>
-    </label><br><br>
+    </label>
 
     <button type="submit">Submit</button>
   </form>
@@ -122,7 +200,7 @@
       const obj = {};
       formData.forEach((value, key) => obj[key] = value);
 
-      fetch("https://script.google.com/macros/s/AKfycbwAYIE41b9px8dFjl-YtTeahtyRrrmlGP8TwxGguTidfsHvip0YUwd6Tzl2xgK96ri4/exec", {
+      fetch("https://script.google.com/macros/s/YOUR_GOOGLE_APPS_SCRIPT_URL/exec", {
         method: "POST",
         body: JSON.stringify(obj)
       })
