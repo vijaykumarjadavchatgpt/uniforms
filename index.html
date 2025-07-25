@@ -1,75 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Uniform Form</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+  <meta charset="UTF-8">
+  <title>Uniform Distribution Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #00b4db, #0083b0);
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #74ebd5, #acb6e5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
     }
 
-    form {
-      background: white;
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 500px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     }
 
     h2 {
       text-align: center;
-      color: #333;
+      color: #0083b0;
     }
 
     label {
       display: block;
-      margin-bottom: 10px;
-      color: #555;
-      font-weight: bold;
+      margin: 15px 0 5px;
+      font-size: 1.1em;
+      color: #333;
     }
 
     input, select {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 20px;
+      padding: 12px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #007BFF;
-      color: white;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
+      font-size: 1em;
     }
 
     #stockQty {
+      display: inline-block;
       font-weight: bold;
-      margin-left: 10px;
+      margin-top: 5px;
     }
 
     .green {
@@ -80,84 +55,113 @@
       color: red;
     }
 
-    @media screen and (max-width: 480px) {
-      h2 {
-        font-size: 1.4rem;
+    button {
+      background: #00b4db;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 1.1em;
+      border-radius: 8px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #007e9c;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
       }
-      button {
-        font-size: 1rem;
+
+      label, input, select, button {
+        font-size: 1em;
       }
     }
   </style>
 </head>
-
 <body>
-  <form id="dataForm">
+  <div class="container">
     <h2>Uniform Distribution Form</h2>
+    <form id="dataForm">
+      <label for="emp_code">Employee Code:</label>
+      <input type="number" name="emp_code" id="emp_code" required>
 
-    <label for="emp_code">Employee Code:</label>
-    <input type="number" name="emp_code" id="emp_code" required />
+      <label for="emp_name">Employee Name:</label>
+      <input type="text" name="emp_name" id="emp_name" required>
 
-    <label for="emp_name">Employee Name:</label>
-    <input type="text" name="emp_name" id="emp_name" required />
+      <label for="uniform">Uniform (Barcode):</label>
+      <select name="uniform" id="uniform" required></select>
+      <div>Stock: <span id="stockQty">-</span></div>
 
-    <label for="uniform">Uniform (Barcode):</label>
-    <select name="uniform" id="uniform" required></select>
-    <span>Stock: <span id="stockQty">-</span></span>
+      <label for="region">Region:</label>
+      <select name="region" id="region" required></select>
 
-    <label for="region">Region:</label>
-    <select name="region" id="region" required></select>
+      <label for="store">Store:</label>
+      <select name="store" id="store" required></select>
 
-    <label for="store">Store:</label>
-    <select name="store" id="store" required></select>
+      <label for="qty">Quantity:</label>
+      <select name="qty" id="qty" required>
+        <script>
+          for (let i = 1; i <= 10; i++) {
+            document.write(`<option value="${i}">${i}</option>`);
+          }
+        </script>
+      </select>
 
-    <label for="qty">Qty:</label>
-    <select name="qty" id="qty" required>
-      <script>
-        for (let i = 1; i <= 10; i++) {
-          document.write(`<option value="${i}">${i}</option>`);
-        }
-      </script>
-    </select>
-
-    <button type="submit">Submit</button>
-  </form>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 
   <script>
     let stockData = {};
 
     async function loadData() {
-      // Load stock
-      const stock = await fetch("stock.csv").then(res => res.text());
-      const stockLines = stock.trim().split("\n").slice(1);
-      const stockList = document.getElementById("uniform");
+      // Load stock.csv
+      const stockText = await fetch("stock.csv").then(res => res.text());
+      const stockLines = stockText.trim().split("\n").slice(1);
+      const uniformSelect = document.getElementById("uniform");
 
       stockLines.forEach(line => {
-        const [code, qty] = line.split(",");
-        stockData[code] = parseInt(qty.trim());
+        const [barcode, qty] = line.split(",");
+        const trimmedBarcode = barcode.trim();
+        const trimmedQty = parseInt(qty.trim());
+        stockData[trimmedBarcode] = trimmedQty;
 
         const option = document.createElement("option");
-        option.value = code;
-        option.text = code;
-        stockList.appendChild(option);
+        option.value = trimmedBarcode;
+        option.text = trimmedBarcode;
+        uniformSelect.appendChild(option);
       });
 
-      stockList.addEventListener("change", function () {
+      uniformSelect.addEventListener("change", function () {
         const selected = this.value;
         const qty = stockData[selected];
         const stockQtyEl = document.getElementById("stockQty");
-        stockQtyEl.textContent = qty !== undefined ? qty : "-";
-        stockQtyEl.className = qty > 10 ? "green" : "red";
+
+        if (qty !== undefined) {
+          stockQtyEl.textContent = qty;
+          stockQtyEl.className = qty > 10 ? "green" : "red";
+        } else {
+          stockQtyEl.textContent = "-";
+          stockQtyEl.className = "";
+        }
       });
 
-      // Load store
-      const store = await fetch("store.csv").then(res => res.text());
-      const storeLines = store.trim().split("\n").slice(1);
+      // Load store.csv
+      const storeText = await fetch("store.csv").then(res => res.text());
+      const storeLines = storeText.trim().split("\n").slice(1);
       const regionStoreMap = {};
       storeLines.forEach(line => {
         const [region, store] = line.split(",");
-        if (!regionStoreMap[region]) regionStoreMap[region] = [];
-        regionStoreMap[region].push(store);
+        const r = region.trim();
+        const s = store.trim();
+        if (!regionStoreMap[r]) regionStoreMap[r] = [];
+        regionStoreMap[r].push(s);
       });
 
       const regionSelect = document.getElementById("region");
@@ -169,10 +173,10 @@
       });
 
       regionSelect.addEventListener("change", function () {
-        const stores = regionStoreMap[this.value];
+        const selectedRegion = this.value;
         const storeSelect = document.getElementById("store");
         storeSelect.innerHTML = "";
-        stores.forEach(store => {
+        regionStoreMap[selectedRegion]?.forEach(store => {
           const opt = document.createElement("option");
           opt.value = store;
           opt.text = store;
@@ -181,45 +185,41 @@
       });
     }
 
-    window.onload = loadData;
+    loadData();
 
-    // Submit + PDF Generation
-    document.getElementById("dataForm").addEventListener("submit", async function (e) {
+    document.getElementById("dataForm").addEventListener("submit", function (e) {
       e.preventDefault();
-
       const formData = new FormData(this);
       const data = {};
       formData.forEach((value, key) => data[key] = value);
 
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbwAYIE41b9px8dFjl-YtTeahtyRrrmlGP8TwxGguTidfsHvip0YUwd6Tzl2xgK96ri4/exec", {
-          method: "POST",
-          body: JSON.stringify(data)
-        });
+      // Submit to Google Apps Script (replace with your own script URL)
+      fetch("https://script.google.com/macros/s/AKfycbwAYIE41b9px8dFjl-YtTeahtyRrrmlGP8TwxGguTidfsHvip0YUwd6Tzl2xgK96ri4/exec", {
+        method: "POST",
+        body: JSON.stringify(data)
+      })
+      .then(res => res.text())
+      .then(response => {
+        alert("✅ Your Data Submitted Successfully.");
 
-        if (!response.ok) throw new Error("Failed to submit to Google Sheet.");
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFontSize(16);
-        doc.text("Uniform Distribution Submission", 20, 20);
-        let y = 40;
-        Object.entries(data).forEach(([key, value]) => {
-          doc.text(`${key.replace(/_/g, " ")}: ${value}`, 20, y);
-          y += 10;
-        });
-
-        const filename = `Uniform_${data.emp_code || "submission"}.pdf`;
-        doc.save(filename);
-
-        alert("✅ Submitted successfully and PDF downloaded.");
+        // Reset form and dropdowns
         this.reset();
         document.getElementById("stockQty").textContent = "-";
         document.getElementById("stockQty").className = "";
-      } catch (err) {
-        alert("❌ Error: " + err.message);
-      }
+
+        document.getElementById("uniform").selectedIndex = -1;
+        document.getElementById("region").selectedIndex = -1;
+        document.getElementById("store").innerHTML = "";
+
+        // Trigger manual change
+        setTimeout(() => {
+          document.getElementById("uniform").dispatchEvent(new Event('change'));
+          document.getElementById("region").dispatchEvent(new Event('change'));
+        }, 100);
+      })
+      .catch(err => {
+        alert("❌ Submission failed: " + err);
+      });
     });
   </script>
 </body>
